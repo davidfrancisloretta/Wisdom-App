@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wisdom-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: wisdom_db
+      POSTGRES_USER: wisdom
+      POSTGRES_PASSWORD: wisdom_dev_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - wisdom-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wisdom -d wisdom_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: wisdom-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - wisdom-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./wisdom-backend
+      dockerfile: Dockerfile
+    container_name: wisdom-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./wisdom-backend/.env
+    volumes:
+      - ./wisdom-backend:/app
+    networks:
+      - wisdom-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  wisdom-network:
+    driver: bridge
