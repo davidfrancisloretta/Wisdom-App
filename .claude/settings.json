@@ -1,14 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(docker-compose up:*)",
-      "Bash(docker info:*)",
-      "Bash(curl -s http://localhost:8000/health)",
-      "Bash(curl -s http://localhost:8000/openapi.json)",
-      "Bash(python -c \"import sys,json; routes=json.load\\(sys.stdin\\)[''''paths'''']; [print\\(r\\) for r in sorted\\(routes.keys\\(\\)\\)]\")",
-      "Bash(find:*)",
-      "Bash(cat:*)",
-      "Bash(ls:*)"
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Glob",
+      "Grep",
+      "Agent"
     ]
   },
   "mcpServers": {
